@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AccountController;
 use App\Http\Controllers\Api\TransactionController;
+use App\Http\Controllers\Api\PdfController;
 
 
 
@@ -50,4 +51,6 @@ Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
     Route::post('transactions', [TransactionController::class, 'store']); // Create transaction
 
     Route::get('/accounts/{id}/statement', [PdfController::class, 'generateStatement']);// transactions in PDF
+
+    Route::post('/transfer', [TransactionController::class, 'transferFunds']); // Fund Transfers
 });

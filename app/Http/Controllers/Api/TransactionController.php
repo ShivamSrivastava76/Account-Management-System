@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\TransactionRequest;
+use App\Http\Requests\TransferRequest;
 use App\Models\Account;
 use App\Models\Transaction;
 use Illuminate\Http\JsonResponse;
@@ -105,7 +106,6 @@ class TransactionController extends Controller
                 'type' => $request->type,
                 'amount' => $request->amount,
                 'description' => $request->description ?? '',
-                'balance_after' => $newBalance // Track balance after transaction
             ]);
 
             // Commit: Return transaction details with success status
@@ -133,5 +133,48 @@ class TransactionController extends Controller
                 'error' => config('app.debug') ? $e->getMessage() : null
             ], 500);
         }
+    }
+
+    public function transferFunds(TransferRequest $request)
+    {
+        $fromAccount = Account::where('id', $request->from_account_number)->first();
+        $toAccount = Account::where('id', $request->to_account_number)->first();
+        $amount = $request->amount;
+
+        // Check if the sender has enough balance
+        if ($fromAccount->balance < $amount) {
+            return response()->json(['error' => 'Insufficient balance'], 400);
+        }
+
+
+        Transaction::create([
+            'id' => Str::uuid()->toString(),
+            'account_id' => $request->from_account_number,
+            'type' => 'Debit',
+            'amount' => $amount,
+            'description' => 'Fund transfer to ' . $request->to_account_number,
+        ]);
+
+        $toAccount->update([
+            'balance' => $toAccount->balance + $amount
+        ]);
+
+        $fromAccount->update([
+            'balance' => $fromAccount->balance - $amount
+        ]);
+
+        Transaction::create([
+            'id' => Str::uuid()->toString(),
+            'account_id' => $request->to_account_number,
+            'type' => 'Credit',
+            'amount' => $amount,
+            'description' => 'Fund received from ' . $request->from_account_number,
+        ]);
+
+        return response()->json([
+            'message' => 'Transfer successful',
+            'from_account_balance' => $fromAccount->balance,
+            'to_account_balance' => $toAccount->balance,
+        ], 200);
     }
 }
