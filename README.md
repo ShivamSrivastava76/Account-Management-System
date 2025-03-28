@@ -127,6 +127,24 @@ Request Body:
 GET /api/transactions?account_number=xxxxxxxxxxxx&from=2023-01-01&to=2023-12-31
 ```
 
+#### Transaction Statement
+```
+POST /api/accounts/{id}/statement
+```
+
+#### Fund transfers
+```
+POST /api/transfer
+```
+Request Body:
+```json
+{
+    "from_account_number":"efd864b6-ab84-45f2-939e-aadfa620931b",
+    "to_account_number":"c5ec9982-a2d4-4f79-be60-d4803c5ab84d",
+    "amount":300
+}
+```
+
 ## Database Schema
 
 ### Accounts Table
@@ -163,3 +181,6 @@ GET /api/transactions?account_number=xxxxxxxxxxxx&from=2023-01-01&to=2023-12-31
 - Input validation for all endpoints
 - Rate limiting (60 requests per minute)
 
+## Future Improvements
+- Fund transfer between accounts
+- PDF statement generation

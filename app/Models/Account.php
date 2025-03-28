@@ -10,6 +10,9 @@ class Account extends Model
 {
     use HasApiTokens, SoftDeletes;
 
+    protected $keyType = 'uuid';
+    public $incrementing = false;
+    
     /**
      * The attributes that are mass assignable.
      *

@@ -14,6 +14,9 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasApiTokens, SoftDeletes;
 
+    protected $keyType = 'uuid';
+    public $incrementing = false;
+    
     /**
      * The attributes that are mass assignable.
      *

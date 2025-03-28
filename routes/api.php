@@ -48,4 +48,6 @@ Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
      */
     Route::get('transactions', [TransactionController::class, 'index']);  // List transactions
     Route::post('transactions', [TransactionController::class, 'store']); // Create transaction
+
+    Route::get('/accounts/{id}/statement', [PdfController::class, 'generateStatement']);// transactions in PDF
 });
